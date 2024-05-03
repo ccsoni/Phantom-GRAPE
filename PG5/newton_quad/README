@@ -1,0 +1,60 @@
+This library accelerates the calculation of quadrupole terms in the 
+Barnes-Hut tree code by use of a SIMD instruction set on the x86 
+architecture, Advanced Vector eXtensions 2 (AVX2). This library is 
+implemented as an extension of the original Phantom-GRAPE that 
+significantly accelerates the calculation of monopole terms. This 
+package also includes sample code of the Barnes-Hut tree which utilize 
+up to quadrupole terms.
+
+Cite following papers if this library is used in your work.
+
+Kodama, T., Ishiyama, T., accepted by PASJ (arXiv:1812.07313)
+Tanikawa et al. (2013) New Astronomy, 19, 74 (arXiv:1203:4037)
+Tanikawa et al. (2012) New Astronomy, 17, 82 (arXiv:1104:2700)
+
+The papers at the top, the middle, and the bottom describe this library, 
+Phantom-GRAPE for collisionless simulations, and Phantom-GRAPE for 
+collisional simulations, respectively.
+
+Following is the directory tree of this package.
+
+tree .................................................... root directory
+|__ README .......................................... README (this file)
+|__ LICENSE ............................... license term of this package
+|__ source.cpp ............................................. sample code
+|__ Makefile .................................. Makefile for sample code
+|__ quad ........... the library for calculation of quadrupole with AVX2
+
+Below is the usage of the sample code.
+
+1. Import "setting.mk" file and "libpg5" directory from 
+   "Phantom-GRAPE/PG5/newton" directory, and "gp5util.h" file from 
+   "Phantom-GRAPE/PG5/newton/libpg5" directory into the root directory 
+   of this package.
+
+2. In "setting.mk" file which is imported, edit the line 
+   "enable_openmp=no" to "enable_openmp=yes".
+
+3. In the root directory of this package, run "make" command to compile 
+   the sample code.
+
+4. Run the sample code by the following command.
+    ---------------------------------
+   ./source <FILENAME> 
+    ---------------------------------
+   <FILENAME> must be the name of a NEMO ASCII N-body snapshot file.
+
+5. Input parameters by standard input. The order of the parameters is as
+   follows; the number of particles, the time step, the finish time, 
+   the interval of times to output virial ratio (t_out), the softening 
+   length, theta, ncrit, and nleaf.
+
+6. The sample code outputs the following data to standard output.
+  a. Parameters used in the simulation.
+  b. Time, the virial ratio, the relative error of energy in the first, 
+     second, and third row, respectively. Those data are outputted only 
+     when time / t_out = 0.
+  c. The total energy in the initial condition and that in the final 
+     condition.
+  d. The wall clock time for total, tree construction, tree traversal, 
+     and force calculation.
