@@ -19,7 +19,7 @@ static double Eps;
 static struct Ptcl_Mem {
   Ipdata iptcl;
   Fodata fout;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
   Jpdata0 jptcl0[JMEMSIZE/2];
 #else
   Jpdata jptcl[JMEMSIZE];
@@ -137,7 +137,7 @@ void g5_set_xei(int ni, double (*xi)[3], double *eps2)
   g5_set_xeiMC(0, ni, xi, eps2);
 }
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void g5_set_xmjMC(int devid, int adr, int nj, double (*xj)[3], double *mj, 
 		  double *epsj2) 
 {
@@ -206,7 +206,7 @@ void g5_set_xmjMC(int devid, int adr, int nj, double (*xj)[3], double *mj)
 #endif
 
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void g5_set_xmj(int adr, int nj, double (*xj)[3], double *mj, double *epsj2) 
 {
   g5_set_xmjMC(0, adr, nj, xj, mj, epsj2);
@@ -222,13 +222,13 @@ void g5_set_xmj(int adr, int nj, double (*xj)[3], double *mj)
 void g5_runMC(int devid) 
 {
   struct Ptcl_Mem *pm = ptcl_mem + devid;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
   void GravityKernel0(pIpdata, pFodata, pJpdata0, int);
 #else
   void GravityKernel(pIpdata, pFodata, pJpdata, int);
 #endif
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
   GravityKernel0(&(pm->iptcl), &(pm->fout), pm->jptcl0, pm->nbody);
 #else
   GravityKernel(&(pm->iptcl), &(pm->fout), pm->jptcl, pm->nbody);
@@ -299,7 +299,7 @@ void g5_calculate_force_on_xeMC(int devid, double (*x)[3], double *eps2,
   }
 }
 
-#ifndef ENABLE_OPENMP
+#ifndef __ENABLE_OPENMP__
 void g5_calculate_force_on_x(double (*x)[3], double (*a)[3], double *p, int ni)
 {
   g5_calculate_force_on_xMC(0, x, a, p, ni);
@@ -323,7 +323,7 @@ void g5_calculate_force_on_x(double (*x)[3], double (*a)[3], double *p,
     int ni = np < nitot-off ? np : nitot-off;
     g5_set_xiMC(tid, ni, x+off);
     {
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       void GravityKernel0(pIpdata, pFodata, pJpdata0, int);
 #else
       void GravityKernel(pIpdata, pFodata, pJpdata, int);
@@ -331,13 +331,13 @@ void g5_calculate_force_on_x(double (*x)[3], double (*a)[3], double *p,
 
       pIpdata ip = &ptcl_mem[tid].iptcl;
       pFodata fo = &ptcl_mem[tid].fout;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       pJpdata0 jp = ptcl_mem[0].jptcl0;
 #else
       pJpdata jp = ptcl_mem[0].jptcl;
 #endif
       int nbody  = ptcl_mem[0].nbody;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       GravityKernel0(ip, fo, jp, nbody);
 #else
       GravityKernel(ip, fo, jp, nbody);
@@ -358,20 +358,20 @@ void g5_calculate_force_on_xe(double (*x)[3], double *eps2, double (*a)[3],
     int ni = np < nitot-off ? np : nitot-off;
     g5_set_xeiMC(tid, ni, x+off, eps2+off);
     {
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       void GravityKernel0(pIpdata, pFodata, pJpdata0, int);
 #else
       void GravityKernel(pIpdata, pFodata, pJpdata, int);
 #endif
       pIpdata ip = &ptcl_mem[tid].iptcl;
       pFodata fo = &ptcl_mem[tid].fout;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       pJpdata0 jp = ptcl_mem[0].jptcl0;
 #else
       pJpdata jp = ptcl_mem[0].jptcl;
 #endif
       int nbody  = ptcl_mem[0].nbody;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
       GravityKernel0(ip, fo, jp, nbody);
 #else
       GravityKernel(ip, fo, jp, nbody);

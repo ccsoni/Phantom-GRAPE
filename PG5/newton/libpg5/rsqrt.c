@@ -42,17 +42,13 @@ double drsqrt(double x){
 double rsqrt_bias(){
   int i;
   union {int i; float f;} buf[2];
-  /*
-    int array[2];
-    float volatile *xfp = (float *)array;
-    int volatile *varray = array;
-  */
+
   double x0, x1, y0, y1;
   double weight;
   double err0, err1;
   double SumWeight, SumErr, SumSqrErr;
   double bias, mse;
-  
+
   SumWeight = SumErr = SumSqrErr = 0.;
   for(i=0;i<(1<<23);i++){
 
@@ -76,33 +72,16 @@ double rsqrt_bias(){
   bias = 0.5 * SumErr / SumWeight;
   mse  = 0.5 * sqrt(SumSqrErr / SumWeight);
   fprintf(stderr, "rsqrt: MSE = %e,  Bias = %e\n", mse, bias);
-	
+
   return bias;
 }
 
 #if 0
 int main(){
-  /*
-    int i, exp;
-    double frac;
-    double x, y;
-    double delta;
-    double sum = 0.0;
-	  
-    for(i=0;i<LEN;i++){
-    x = (i+1.) * 0.11;
-    y = rsqrt(x);
-    delta = x*y*y - 1.0;
-    sum += delta;
-    frac = frexp(x, &exp);
-    if(exp&1) frac*=2;
-    printf("%f %f %e %e\n", x, frac, delta*SCALE, sum);
-    }
-  */
-  // fprintf(stderr, "n: %d, sum: %e\n", LEN, sum);
-  rsqrt_correct = 1.0- rsqrt_bias();
+
+  rsqrt_correct = 1.0 - rsqrt_bias();
   rsqrt_bias();
-  
+
   return 0;
 }
 #endif

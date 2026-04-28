@@ -1,12 +1,30 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
 
+#include "pg5_table.h"
 #include "gp5util.h"
 
 void get_cputime(double *laptime, double *splittime);
 
 #define SQR(x) ((x)*(x))
+
+static double reff(double sft_length, double radius)
+{
+  double ret;
+  double eta  = 2.0*radius/sft_length;
+
+  if(eta < 1.0){
+    ret = (224.+eta*eta*(-224.+eta*(70.+eta*(48.-eta*21.))))
+      * 2.e0/(35.0*(sft_length*sft_length*sft_length));
+  }else if(eta < 2.0){
+    ret = (12./(eta*eta)-224.+eta*(896.+eta*(-840.+eta*(224.+eta*(70.+eta*(-48.+eta*7.)))))) *2.e0/(35.0*eta*(sft_length*sft_length*sft_length));
+  }else{
+    ret = 1.0/pow(radius,3);
+  }
+  return ret;
+}
 
 struct ptcl
 {
@@ -38,6 +56,7 @@ int main(int argc, char **argv)
     part[i].zpos = (double)rand()/RAND_MAX*lbox;
   }
 
+  // very very massive particle in the center of the region.
   part[0].mass = 1.0e5;
   part[0].xpos = part[0].ypos = part[0].zpos = 0.5*lbox;
 
@@ -45,7 +64,7 @@ int main(int argc, char **argv)
   double (*xj)[3], *mj;
   xj = (double (*)[3])malloc(sizeof(double)*nj*3);
   mj = (double *)malloc(sizeof(double)*nj);
-  
+
   for(int j=0;j<nj;j++) {
     xj[j][0] = part[j].xpos;
     xj[j][1] = part[j].ypos;
@@ -69,7 +88,7 @@ int main(int argc, char **argv)
     ai[i][0] = ai[i][1] = ai[i][3] = 0.0;
     pi[i] = 0.0;
   }
-  
+
   double lap, split;
 
   g5_open();
@@ -78,7 +97,8 @@ int main(int argc, char **argv)
   g5_set_nMC(0,nj);
 
   get_cputime(&lap, &split);
-  g5_calculate_force_on_xMC(0, xi, ai, pi, ni);
+  //g5_calculate_force_on_xMC(0, xi, ai, pi, ni);
+  g5_calculate_force_on_x(xi, ai, pi, ni);
   get_cputime(&lap, &split);
 
   double ninter_per_sec = (double)ni*(double)nj/lap;
@@ -93,15 +113,20 @@ int main(int argc, char **argv)
     part[i].pot  = pi[i];
   }
 
+#if 0
   for(int i=1;i<ni;i++) {
-    double rad = 
-      sqrt(SQR(part[i].xpos-0.5*lbox) + SQR(part[i].ypos-0.5*lbox) + SQR(part[i].zpos-0.5*lbox));
+    double rad =
+      sqrt(SQR(part[i].xpos-0.5*lbox) +
+           SQR(part[i].ypos-0.5*lbox) +
+           SQR(part[i].zpos-0.5*lbox));
 
     double acc = sqrt(SQR(part[i].xacc)+SQR(part[i].yacc)+SQR(part[i].zacc));
+    double ref_acc = reff(SFT_FOR_PP, rad) - reff(SFT_FOR_PM, rad);
 
-    printf("%14.6e %14.6e %14.6e\n", rad, acc, part[i].pot);
+    printf("%14.6e %14.6e %14.6e\n", rad, acc, ref_acc*rad*part[0].mass);
 
   }
+#endif
 
   free(part);
 }

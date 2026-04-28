@@ -66,7 +66,7 @@
 
 #define VPERM2F128(src1, src2, dest, imm) asm("vperm2f128 %0, %"src2 ", %"src1 ", %"dest " "::"g"(imm));
 #define VEXTRACTF128(src, dest, imm)      asm("vextractf128 %0, %"src ", %"dest " "::"g"(imm));
-#define VSHUFPS(src1, src2, dest, imm) \
+#define VSHUFPS(src1, src2, dest, imm)                          \
   asm("vshufps %0, %"src2 ", %"src1 ", %"dest " "::"g"(imm));
 
 #define VANDPS(reg1, reg2, dst)      asm("vandps " reg1 "," reg2 "," dst);

@@ -5,7 +5,7 @@
 #include <math.h>
 #include <sys/resource.h>
 #include <sys/time.h>
-#ifdef ENABLE_OPENMP
+#ifdef __ENABLE_OPENMP__
 #include <omp.h>
 #endif
 #include "gp5util.h"
@@ -91,7 +91,7 @@ writenbody(int nj, double *mj, double (*xj)[3], double (*vj)[3], char *fname)
 }
 
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void
 calc_gravity0(double *mj, double (*xj)[3], double (*vj)[3],
 	      double *epsj2, double (*a)[3], double *p, int nj)
@@ -107,7 +107,7 @@ calc_gravity0(double *mj, double (*xj)[3], double (*vj)[3],
 
      double st2 = get_dtime();
      cycle = (double)(st2 - st1) * GIGAHELTZ * 1e9 / ((double)nj*(double)nj/4);
-#ifdef ENABLE_OPENMP
+#ifdef __ENABLE_OPENMP__
 #pragma omp parallel
 #if 1
 	 {
@@ -148,7 +148,7 @@ calc_gravity(double *mj, double (*xj)[3], double (*vj)[3],
 
      double st2 = get_dtime();
      cycle = (double)(st2 - st1) * GIGAHELTZ * 1e9 / ((double)nj*(double)nj/4);
-#ifdef ENABLE_OPENMP
+#ifdef __ENABLE_OPENMP__
 #pragma omp parallel
 #if 1
 	 {
@@ -253,7 +253,7 @@ main(int argc, char **argv)
      double eps;
      eps = 4.0 / (double)nj;
 #else
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
      int i;
      for(i = 0; i < nj; i++)
        epsj2[i] = (0.01 + 0.01 * (double)i / (double)nj) * (0.01 + 0.01 * (double)i / (double)nj);
@@ -266,7 +266,7 @@ main(int argc, char **argv)
 #endif
 #endif
      g5_open();
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
      calc_gravity0(mj, xj, vj, epsj2, a, p, nj);
 #else
      calc_gravity(mj, xj, vj, eps, a, p, nj);
@@ -293,7 +293,7 @@ main(int argc, char **argv)
 	  push_velocity(vj, a, 0.5*dt, nj);
 	  push_position(xj, vj, a, dt, nj);
 	  time = time + dt;
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 	  calc_gravity0(mj, xj, vj, epsj2, a, p, nj);
 #else
 	  calc_gravity(mj, xj, vj, eps, a, p, nj);

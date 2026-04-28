@@ -7,7 +7,7 @@ extern "C" {
 
 #define JMEMSIZE (1<<16) /* 64K */
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void g5_set_xmjMC(int devid, int adr, int nj, double (*xj)[3], double *mj, double *epsj);
 void g5_set_xmj(int adr, int nj, double (*xj)[3], double *mj, double *epsj);
 #else

@@ -55,7 +55,7 @@ void FNAME(g5_set_xeiMC)(int *devid, int *ni, double (*xi)[3], double *eps2)
   g5_set_xeiMC(*devid, *ni, xi, eps2);
 }
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void FNAME(g5_set_xmj)(int *adr, int *nj, double (*xj)[3], double *mj, double *eps2)
 {
   g5_set_xmj(*adr, *nj, xj, mj, eps2);
@@ -67,7 +67,7 @@ void FNAME(g5_set_xmj)(int *adr, int *nj, double (*xj)[3], double *mj)
 }
 #endif
 
-#ifdef SYMMETRIC
+#ifdef __SYMMETRIC_EPS__
 void FNAME(g5_set_xmjMC)(int *devid, int *adr, int *nj, double (*xj)[3], double *mj, double *eps2)
 {
   g5_set_xmjMC(*devid, *adr, *nj, xj, mj, eps2);

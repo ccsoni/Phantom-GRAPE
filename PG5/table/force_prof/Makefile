@@ -1,8 +1,9 @@
 include ../setting.mk
 
+CFLAGS+= -I../$(LIBPG5_DIR)
+
 OBJS = force_prof.o cpu.o ../$(LIBPG5_DIR)/libpg5.a
 
-CFLAGS += -std=c99
 
 force_prof: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) -lm
@@ -20,4 +21,3 @@ clean:
 distclean: clean
 	$(MAKE) -C ../$(LIBPG5_DIR) distclean
 	rm -rf force_prof *~
-
